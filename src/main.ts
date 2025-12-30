@@ -10,7 +10,7 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({
     origin: true, // Allows any origin (good for development + Docker)
-    credentials: true, // If you ever use cookies/auth
+    credentials: true, // If you ever use cookies/auth/more
   });
 
   
