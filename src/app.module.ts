@@ -14,26 +14,34 @@ import { StoryProtocolModule } from './modules/story-protocol/story-protocol.mod
 
 @Module({
   imports: [
-    // Configuration
+    // Configuration - FIXED: Use undefined instead of null
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: process.env.NODE_ENV === 'development' ? '.env' : undefined,
     }),
     
-    // Database
+    // Database - Fix SSL for production
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DATABASE_HOST') || 'localhost',
-        port: parseInt(configService.get<string>('DATABASE_PORT') || '5432', 10),
-        username: configService.get<string>('DATABASE_USER') || 'postgres',
-        password: configService.get<string>('DATABASE_PASSWORD') || 'password',
-        database: configService.get<string>('DATABASE_NAME') || 'ip_platform',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<string>('NODE_ENV') !== 'production',
-        logging: configService.get<string>('NODE_ENV') !== 'production',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get<string>('NODE_ENV') === 'production';
+        
+        return {
+          type: 'postgres',
+          host: configService.get<string>('DATABASE_HOST') || 'localhost',
+          port: parseInt(configService.get<string>('DATABASE_PORT') || '5432', 10),
+          username: configService.get<string>('DATABASE_USER') || 'postgres',
+          password: configService.get<string>('DATABASE_PASSWORD') || 'password',
+          database: configService.get<string>('DATABASE_NAME') || 'ip_platform',
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: configService.get<string>('NODE_ENV') !== 'production',
+          logging: configService.get<string>('NODE_ENV') !== 'production',
+          // ADD THIS FOR RENDER POSTGRES
+          ssl: isProduction ? {
+            rejectUnauthorized: false
+          } : false,
+        };
+      },
       inject: [ConfigService],
     }),
     
