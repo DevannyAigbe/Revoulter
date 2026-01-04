@@ -1,8 +1,57 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero">
+    <div class="hero-card">
+        <div class="icon-grid">
+
+            <a href="/Register" class="icon-item">
+                <div class="icon-circle">
+                    🔐
+                </div>
+                <div class="icon-label">Register IP</div>
+            </a>
+
+            <a href="/IpIndex" class="icon-item">
+                <div class="icon-circle">
+                    📊
+                </div>
+                <div class="icon-label">IP Index</div>
+            </a>
+
+            <a href="/Licensing" class="icon-item">
+                <div class="icon-circle">
+                    💼
+                </div>
+                <div class="icon-label">Licensing Hub</div>
+            </a>
+
+            <a href="/Creators" class="icon-item">
+                <div class="icon-circle">
+                    🌍
+                </div>
+                <div class="icon-label">Creator Hub</div>
+            </a>
+
+            <a href="/Legal" class="icon-item">
+                <div class="icon-circle">
+                    ⚖️
+                </div>
+                <div class="icon-label">Legal Assist</div>
+            </a>
+
+            <a href="/IpQuest" class="icon-item">
+                <div class="icon-circle">
+                    🎮
+                </div>
+                <div class="icon-label">IP Quest</div>
+            </a>
+
+        </div>
+
+        <p class="mt-4 text-muted" style="font-size: 0.85rem;">
+            All you need to manage your IP, choose a button above.
+        </p>
+    </div>
+</section>

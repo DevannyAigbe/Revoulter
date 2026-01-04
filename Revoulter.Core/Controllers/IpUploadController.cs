@@ -149,12 +149,15 @@ namespace Revoulter.Core.Controllers
             return RedirectToAction("Success", new { id = model.Id });
         }
 
-        public IActionResult Success(int id)
+        public IActionResult Success(Guid id)
         {
-            var asset = _context.IpAssets.Find(id);
+            var asset = _context.IpAssets.FirstOrDefault(a => a.Id == id);
+
+            if (asset == null)
+                return NotFound();
+
             return View(asset);
         }
-
         // ✅ HELPER METHOD: Get user with multiple fallback methods
         private async Task<ApplicationUser?> GetCurrentUserAsync()
         {
