@@ -1,0 +1,12 @@
+﻿@model Revoulter.Core.Models.IpAsset
+
+<h2>Upload Successful!</h2>
+<p>Title: @Model.Title</p>
+<p>Description: @Model.Description</p>
+<p>File: @Model.FileName</p>
+<p>Category: @Model.Category</p>
+<p>Ownership: @Model.OwnershipPercentage%</p>
+<p>Mock Arweave TxId: @Model.ArweaveTxId</p>
+<p>Mock Story Protocol Id: @Model.StoryProtocolId</p>
+<p>Hash: @Model.Hash</p>
+<a href="@Model.FilePath" download>Download File</a>

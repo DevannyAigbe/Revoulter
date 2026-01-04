@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Revoulter.Core.Models.IpAsset>
+
+@{
+    ViewData["Title"] = "My IP Assets";
+}
+
+<h2>My Intellectual Property Assets</h2>
+
+<p>
+    <a asp-action="Index" class="btn btn-primary">Upload New IP Asset</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p>You haven't uploaded any IP assets yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>File</th>
+                    <th>Ownership</th>
+                    <th>Uploaded</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@Html.DisplayFor(modelItem => item.Title)</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">@item.Category</span>
+                        </td>
+                        <td>
+                            <small>@item.FileName</small>
+                        </td>
+                        <td>
+                            @item.OwnershipPercentage%
+                        </td>
+                        <td>
+                            @item.CreatedAt.ToString("MMM dd, yyyy")
+                        </td>
+                        <td>
+                            <small>
+                                Arweave: <code>@(string.IsNullOrEmpty(item.ArweaveTxId) ? "Pending" : item.ArweaveTxId.Substring(0, 8) + "...")</code><br />
+                                Story: <code>@(string.IsNullOrEmpty(item.StoryProtocolId) ? "Pending" : item.StoryProtocolId.Substring(0, 8) + "...")</code>
+                            </small>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="@item.FilePath" download class="btn btn-sm btn-outline-success">Download</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

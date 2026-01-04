@@ -1,0 +1,50 @@
+﻿@model Revoulter.Core.Models.IpAsset
+
+@{
+    ViewData["Title"] = "IP Asset Details";
+}
+
+<h2>IP Asset Details</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h4>@Model.Title</h4>
+        <span class="badge bg-primary">@Model.Category</span>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">File</dt>
+            <dd class="col-sm-9">
+                <strong>@Model.FileName</strong><br />
+                <a href="@Model.FilePath" download class="btn btn-success btn-sm mt-2">Download File</a>
+            </dd>
+
+            <dt class="col-sm-3">Ownership</dt>
+            <dd class="col-sm-9">@Model.OwnershipPercentage% (Owner: @Model.Owner.UserName)</dd>
+
+            <dt class="col-sm-3">Uploaded On</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("MMMM dd, yyyy HH:mm") UTC</dd>
+
+            <dt class="col-sm-3">File Hash (SHA256)</dt>
+            <dd class="col-sm-9"><code class="small">@Model.Hash</code></dd>
+
+            <dt class="col-sm-3">Mock Arweave Storage</dt>
+            <dd class="col-sm-9">
+                <code>@Model.ArweaveTxId</code>
+                @(string.IsNullOrEmpty(Model.ArweaveTxId) ? "<em>(Simulated)</em>" : "")
+            </dd>
+
+            <dt class="col-sm-3">Mock Story Protocol Registration</dt>
+            <dd class="col-sm-9">
+                <code>@Model.StoryProtocolId</code>
+                @(string.IsNullOrEmpty(Model.StoryProtocolId) ? "<em>(Simulated)</em>" : "")
+            </dd>
+        </dl>
+    </div>
+    <div class="card-footer">
+        <a asp-action="MyAssets" class="btn btn-secondary">Back to My Assets</a>
+    </div>
+</div>

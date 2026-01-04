@@ -1,0 +1,720 @@
+﻿@model dynamic
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privy Authentication - Vanilla JS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-indicator.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected .status-dot {
+            background: #28a745;
+        }
+
+        .status-indicator.disconnected .status-dot {
+            background: #dc3545;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .auth-view, .dashboard-view {
+            display: none;
+        }
+
+        .auth-view.active, .dashboard-view.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            box-shadow: none;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background: #efe;
+            color: #3c3;
+            border: 1px solid #cfc;
+        }
+
+        .message.info {
+            background: #eef;
+            color: #33c;
+            border: 1px solid #ccf;
+        }
+
+        .user-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .user-card h2 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 14px;
+            word-break: break-all;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .method-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .method-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .method-btn.active {
+            border-color: #667eea;
+            background: #f0f3ff;
+            color: #667eea;
+        }
+
+        .method-btn:hover {
+            border-color: #667eea;
+        }
+
+        .setup-instructions {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .setup-instructions h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .setup-instructions p {
+            color: #856404;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🔐 Privy Auth</h1>
+            <p>Secure Authentication System</p>
+        </div>
+
+        <div id="statusIndicator" class="status-indicator disconnected">
+            <div class="status-dot"></div>
+            <span id="statusText">Checking connection...</span>
+        </div>
+
+        <div id="setupInstructions" class="setup-instructions hidden">
+            <h4>⚠️ Backend Not Connected</h4>
+            <p>Make sure your backend server is running:</p>
+            <p><strong>1.</strong> cd backend</p>
+            <p><strong>2.</strong> npm install</p>
+            <p><strong>3.</strong> npm start</p>
+        </div>
+
+        <!-- Authentication View -->
+        <div class="auth-view active" id="authView">
+            <div id="messageContainer"></div>
+
+            <div class="method-selector">
+                <button class="method-btn active" onclick="switchMethod('email')" id="emailMethodBtn">
+                    📧 Email
+                </button>
+                <button class="method-btn" onclick="switchMethod('sms')" id="smsMethodBtn">
+                    📱 SMS
+                </button>
+            </div>
+
+            <!-- Email Login Form -->
+            <form id="emailForm" onsubmit="handleEmailSubmit(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div id="otpSection" class="hidden">
+                    <div class="form-group">
+                        <label for="emailOtp">Verification Code</label>
+                        <input type="text" id="emailOtp" placeholder="Enter 6-digit code" maxlength="6">
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="emailSubmitBtn">Send Code</button>
+            </form>
+
+            <!-- SMS Login Form -->
+            <form id="smsForm" onsubmit="handleSmsSubmit(event)" class="hidden">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="+1234567890" required>
+                    <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">
+                        Include country code (e.g., +1 for US)
+                    </small>
+                </div>
+                <div id="smsOtpSection" class="hidden">
+                    <div class="form-group">
+                        <label for="smsOtp">Verification Code</label>
+                        <input type="text" id="smsOtp" placeholder="Enter 6-digit code" maxlength="6">
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="smsSubmitBtn">Send Code</button>
+            </form>
+        </div>
+
+        <!-- Dashboard View -->
+        <div class="dashboard-view" id="dashboardView">
+            <div class="user-card">
+                <h2>Welcome! 👋</h2>
+                <div class="user-info" id="userInfo">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading user data...</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Update this if your backend is on a different port
+        const BACKEND_URL = 'http://localhost:5115';
+
+        // State Management
+        let currentMethod = 'email';
+        let codeSent = false;
+        let currentUser = null;
+        let backendConnected = false;
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', async () => {
+            await checkBackendConnection();
+            checkExistingSession();
+        });
+
+        // Check if backend is running
+        async function checkBackendConnection() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/health`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(3000)
+                });
+
+                if (response.ok) {
+                    backendConnected = true;
+                    updateConnectionStatus(true);
+                } else {
+                    backendConnected = false;
+                    updateConnectionStatus(false);
+                }
+            } catch (error) {
+                backendConnected = false;
+                updateConnectionStatus(false);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const instructions = document.getElementById('setupInstructions');
+
+            if (connected) {
+                indicator.className = 'status-indicator connected';
+                statusText.textContent = 'Backend Connected';
+                instructions.classList.add('hidden');
+            } else {
+                indicator.className = 'status-indicator disconnected';
+                statusText.textContent = 'Backend Disconnected';
+                instructions.classList.remove('hidden');
+            }
+        }
+
+        // Switch authentication method
+        window.switchMethod = (method) => {
+            currentMethod = method;
+            codeSent = false;
+
+            document.getElementById('emailMethodBtn').classList.toggle('active', method === 'email');
+            document.getElementById('smsMethodBtn').classList.toggle('active', method === 'sms');
+
+            document.getElementById('emailForm').classList.toggle('hidden', method !== 'email');
+            document.getElementById('smsForm').classList.toggle('hidden', method !== 'sms');
+
+            document.getElementById('otpSection').classList.add('hidden');
+            document.getElementById('smsOtpSection').classList.add('hidden');
+
+            clearMessage();
+        };
+
+        // Handle Email Form Submit
+        window.handleEmailSubmit = async (e) => {
+            e.preventDefault();
+
+            if (!backendConnected) {
+                showMessage('Backend server is not running. Please start the server first.', 'error');
+                return;
+            }
+
+            const email = document.getElementById('email').value;
+            const otp = document.getElementById('emailOtp').value;
+            const submitBtn = document.getElementById('emailSubmitBtn');
+
+            if (!codeSent) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/api/send-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to send code');
+                    }
+
+                    document.getElementById('otpSection').classList.remove('hidden');
+                    submitBtn.textContent = 'Verify Code';
+                    codeSent = true;
+                    showMessage('✅ Code sent! Check your email inbox.', 'success');
+                    document.getElementById('emailOtp').focus();
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                    submitBtn.textContent = 'Send Code';
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                if (!otp || otp.length < 4) {
+                    showMessage('Please enter the verification code', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Verifying...';
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/api/verify-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, code: otp })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Verification failed');
+                    }
+
+                    currentUser = {
+                        id: data.user?.id || 'unknown',
+                        email: email,
+                        token: data.token,
+                        createdAt: new Date().toISOString(),
+                        userData: data.user
+                    };
+
+                    localStorage.setItem('privyUser', JSON.stringify(currentUser));
+                    showMessage('✅ Login successful!', 'success');
+                    setTimeout(() => showDashboard(), 1000);
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                    submitBtn.textContent = 'Verify Code';
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            }
+        };
+
+        // Handle SMS Form Submit
+        window.handleSmsSubmit = async (e) => {
+            e.preventDefault();
+
+            if (!backendConnected) {
+                showMessage('Backend server is not running. Please start the server first.', 'error');
+                return;
+            }
+
+            const phone = document.getElementById('phone').value;
+            const otp = document.getElementById('smsOtp').value;
+            const submitBtn = document.getElementById('smsSubmitBtn');
+
+            if (!codeSent) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/api/send-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ phone })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Failed to send code');
+                    }
+
+                    document.getElementById('smsOtpSection').classList.remove('hidden');
+                    submitBtn.textContent = 'Verify Code';
+                    codeSent = true;
+                    showMessage('✅ Code sent! Check your phone.', 'success');
+                    document.getElementById('smsOtp').focus();
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                    submitBtn.textContent = 'Send Code';
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            } else {
+                if (!otp || otp.length < 4) {
+                    showMessage('Please enter the verification code', 'error');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Verifying...';
+
+                try {
+                    const response = await fetch(`${BACKEND_URL}/api/verify-code`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ phone, code: otp })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Verification failed');
+                    }
+
+                    currentUser = {
+                        id: data.user?.id || 'unknown',
+                        phone: phone,
+                        token: data.token,
+                        createdAt: new Date().toISOString(),
+                        userData: data.user
+                    };
+
+                    localStorage.setItem('privyUser', JSON.stringify(currentUser));
+                    showMessage('✅ Login successful!', 'success');
+                    setTimeout(() => showDashboard(), 1000);
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                    submitBtn.textContent = 'Verify Code';
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            }
+        };
+
+        // Check for existing session
+        function checkExistingSession() {
+            const storedUser = localStorage.getItem('privyUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                showDashboard();
+            }
+        }
+
+        // Show Dashboard
+        function showDashboard() {
+            document.getElementById('authView').classList.remove('active');
+            document.getElementById('dashboardView').classList.add('active');
+
+            const userInfoHtml = `
+                <div class="info-item">
+                    <span class="info-label">User ID</span>
+                    <span class="info-value">${currentUser.id}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">${currentUser.email ? 'Email' : 'Phone'}</span>
+                    <span class="info-value">${currentUser.email || currentUser.phone}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Session Started</span>
+                    <span class="info-value">${new Date(currentUser.createdAt).toLocaleString()}</span>
+                </div>
+                ${currentUser.token ? `
+                <div class="info-item">
+                    <span class="info-label">Access Token</span>
+                    <span class="info-value" style="font-family: monospace; font-size: 11px;">${currentUser.token.substring(0, 30)}...</span>
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('userInfo').innerHTML = userInfoHtml;
+        }
+
+        // Logout
+        window.logout = () => {
+            localStorage.removeItem('privyUser');
+            currentUser = null;
+            codeSent = false;
+
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('authView').classList.add('active');
+
+            document.getElementById('email').value = '';
+            document.getElementById('emailOtp').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('smsOtp').value = '';
+            document.getElementById('otpSection').classList.add('hidden');
+            document.getElementById('smsOtpSection').classList.add('hidden');
+            document.getElementById('emailSubmitBtn').textContent = 'Send Code';
+            document.getElementById('smsSubmitBtn').textContent = 'Send Code';
+
+            showMessage('✅ Logged out successfully', 'success');
+        };
+
+        // UI Helper Functions
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => clearMessage(), 6000);
+        }
+
+        function clearMessage() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
