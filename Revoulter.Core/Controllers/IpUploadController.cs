@@ -76,24 +76,34 @@ namespace Revoulter.Core.Controllers
             return View(asset);
         }
 
+       
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(IpAsset model, IFormFile file)
         {
-            if (!ModelState.IsValid || file == null)
-            {
-                ViewBag.Categories = new SelectList(Enum.GetValues(typeof(Category)));
-                return View("Index", model);
-            }
+            //if (!ModelState.IsValid || file == null)
+            //{
+            //    ViewBag.Categories = new SelectList(Enum.GetValues(typeof(Category)));
+            //    return View("Index", model);
+            //}
 
-            // ✅ FIX: Use fallback methods to get user
+            // 1️⃣ Try your custom/session-based method first
             var user = await GetCurrentUserAsync();
 
+            // 2️⃣ Fallback to ASP.NET Core Identity if custom fails
+            if (user == null && User?.Identity?.IsAuthenticated == true)
+            {
+                user = await _userManager.GetUserAsync(User);
+            }
+
+            // 3️⃣ Final guard
             if (user == null)
             {
                 TempData["Error"] = "Session expired. Please login again.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account"); // or Identity default route
             }
+
 
             Console.WriteLine($"✅ Upload - User found: {user.Id}");
 
