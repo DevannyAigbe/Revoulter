@@ -7,24 +7,36 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-  @*   <link rel="stylesheet" href="~/Revoulter.Core.styles.css" asp-append-version="true" /> *@
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- NAVIGATION -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm sticky-top">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Revoulter.Core</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                    <span class="d-none d-sm-inline">Revulter Cultural Commerce</span>
+                    <span class="d-sm-none">Revulter</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "RegisterIP" ? "active" : "")" asp-controller="PrivyAuth" asp-action="Register">Register IP</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "IPIndex" ? "active" : "")" asp-controller="IP" asp-action="Index">IP Index</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Licensing" ? "active" : "")" asp-controller="Licensing" asp-action="Index">Licensing Hub</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "CreatorHub" ? "active" : "")" asp-controller="Creator" asp-action="Index">Creator Hub</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
@@ -32,20 +44,49 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Revoulter.Core - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- BODY -->
+    <main class="flex-grow-1 container py-4">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white mt-auto">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <a class="d-flex align-items-center mb-3 text-white text-decoration-none" asp-controller="Home" asp-action="Index">
+                        <span class="fw-bold fs-5">Revulter Cultural Commerce</span>
+                    </a>
+                    <p class="text-muted">Powering the Creative Economy. The End-to-End Creative IP Infrastructure for Global Export, with Gamified education, Rights intelligence, AI amped workflow, and Community.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li><a class="text-muted text-decoration-none" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                        <li><a class="text-muted text-decoration-none" asp-controller="Home" asp-action="Terms">Terms of Service</a></li>
+                        <li><a class="text-muted text-decoration-none" asp-controller="Home" asp-action="Contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Follow Us</h6>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="text-muted"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-muted"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-top border-white-50 mt-4 pt-3 text-center">
+                <small class="text-muted">© 2026 Revulter Cultural Commerce. All rights reserved.</small>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

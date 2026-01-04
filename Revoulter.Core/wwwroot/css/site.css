@@ -1,25 +1,27 @@
 /* =========================
-   REVOLUTER DESIGN TOKENS
+   REVOLUTER DESIGN TOKENS - DARK THEME
 ========================= */
-
 :root {
-    --bg-light: #fafafa;
+    --bg-light: #0a0a0a;
     --bg-dark: #121212;
-    --text-dark: #111;
+    --text-dark: #f5f5f5;
     --text-light: #f5f5f5;
-    --card-bg: #ffffff;
-    --border-color: #e5e5e5;
+    --card-bg: #1a1a1a;
+    --border-color: #2a2a2a;
     --accent: #f5c451;
+    --accent-hover: #f7d06a;
+    --input-bg: #0f0f0f;
+    --input-border: #333;
     --radius-xl: 40px;
     --radius-lg: 20px;
-    --shadow-soft: inset 0 2px 10px rgba(255,255,255,0.8), 0 8px 32px rgba(0,0,0,0.08);
-    --shadow-circle: inset -2px -2px 8px rgba(255,255,255,0.9), inset 2px 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.08);
+    --radius-md: 12px;
+    --shadow-soft: inset 0 2px 10px rgba(255,255,255,0.02), 0 8px 32px rgba(0,0,0,0.4);
+    --shadow-circle: inset -2px -2px 8px rgba(255,255,255,0.03), inset 2px 2px 8px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.5);
 }
 
 /* =========================
    BASE STYLES
 ========================= */
-
 html {
     scroll-behavior: smooth;
 }
@@ -32,28 +34,73 @@ body {
 
 /* Typography */
 h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 900;
     letter-spacing: -1px;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
 }
 
 h2 {
-    font-size: 2.2rem;
-    font-weight: 800;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 p {
     font-size: 1rem;
     line-height: 1.7;
+    color: var(--text-dark);
 }
 
 /* =========================
-   HERO SECTION
+   NAVIGATION - DARK
 ========================= */
+.navbar {
+    background: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
 
+.navbar-brand {
+    color: var(--text-dark) !important;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #999 !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+    .navbar-light .navbar-nav .nav-link:hover,
+    .navbar-light .navbar-nav .nav-link.active {
+        color: var(--accent) !important;
+    }
+
+.navbar-toggler {
+    border-color: var(--border-color);
+}
+
+.navbar-toggler-icon {
+    filter: invert(1);
+}
+
+/* =========================
+   HERO SECTION - DARK BACKGROUND
+========================= */
 .hero {
     padding: 120px 20px 80px;
     text-align: center;
+    background: var(--bg-light);
 }
 
 .hero-card {
@@ -62,14 +109,13 @@ p {
     padding: 32px;
     background: linear-gradient(to bottom right, #fff, #fff);
     border-radius: var(--radius-xl);
-    border: 2px solid rgba(255,255,255,0.6);
-    box-shadow: var(--shadow-soft);
+    border: 2px solid rgba(0,0,0,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 /* =========================
-   ICON GRID
+   ICON GRID - BLACK TEXT & ICONS
 ========================= */
-
 .icon-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -78,34 +124,262 @@ p {
 
 .icon-item {
     text-decoration: none;
-    color: inherit;
+    color: #111;
 }
 
 .icon-circle {
     width: 96px;
     height: 96px;
     border-radius: 50%;
-    background: #fff;
-    box-shadow: var(--shadow-circle);
+    background: #f5f5f5;
+    box-shadow: inset -2px -2px 8px rgba(255,255,255,0.9), inset 2px 2px 8px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.08);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 12px;
     transition: all 0.3s ease;
+    font-size: 2rem;
 }
 
     .icon-circle:hover {
         transform: scale(1.08);
+        box-shadow: inset -2px -2px 8px rgba(255,255,255,1), inset 2px 2px 8px rgba(0,0,0,0.15), 0 6px 16px rgba(0,0,0,0.12);
     }
 
 .icon-label {
     font-size: 0.85rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.hero-card p {
     color: #666;
 }
 
 /* =========================
-   FOOTER
+   FORM STYLES - DARK THEME
 ========================= */
+.row {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Form Containers */
+form {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+}
+
+    form h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    form hr {
+        border-color: var(--border-color);
+        opacity: 0.3;
+        margin: 1.5rem 0;
+    }
+
+/* Form Inputs */
+.form-floating {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    background: var(--input-bg);
+    border: 2px solid var(--input-border);
+    color: var(--text-dark);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+    .form-control:focus {
+        background: var(--input-bg);
+        border-color: var(--accent);
+        color: var(--text-dark);
+        box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.15);
+    }
+
+    .form-control::placeholder {
+        color: #666;
+    }
+
+.form-floating > label {
+    color: #888;
+    padding-left: 1rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--accent);
+}
+
+/* Checkbox */
+.checkbox label,
+.form-check-label {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.form-check-input {
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
+    cursor: pointer;
+}
+
+    .form-check-input:checked {
+        background-color: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .form-check-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(245, 196, 81, 0.15);
+    }
+
+/* Buttons */
+.btn-primary {
+    background: var(--accent);
+    border: none;
+    color: #111;
+    font-weight: 700;
+    padding: 0.875rem 2rem;
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+    .btn-primary:hover {
+        background: var(--accent-hover);
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 196, 81, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+/* Links */
+form a,
+section a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+    form a:hover,
+    section a:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+    }
+
+form p {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Validation */
+.text-danger {
+    color: #ff6b6b !important;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* External Login Section */
+section {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+}
+
+    section h3 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    section hr {
+        border-color: var(--border-color);
+        opacity: 0.3;
+        margin: 1.5rem 0;
+    }
+
+    section p {
+        color: #aaa;
+        font-size: 0.9rem;
+    }
+
+    /* Remove external auth message */
+    section div > p {
+        display: none;
+    }
+
+/* External provider buttons */
+#external-account button {
+    margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+/* =========================
+   MAIN CONTAINER - DARK
+========================= */
+main.container {
+    background: var(--bg-light);
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* =========================
+   FOOTER - ENHANCED DARK
+========================= */
+footer.bg-dark {
+    background: #0d0d0d !important;
+    border-top: 1px solid var(--border-color);
+}
+
+footer h6 {
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+footer p,
+footer .text-muted {
+    color: #888 !important;
+}
+
+footer a.text-muted {
+    transition: color 0.3s ease;
+}
+
+    footer a.text-muted:hover {
+        color: var(--accent) !important;
+    }
+
+footer .text-white {
+    color: var(--text-dark) !important;
+}
+
+footer .border-white-50 {
+    border-color: var(--border-color) !important;
+}
 
 .footer {
     border-top: 1px solid var(--border-color);
@@ -113,12 +387,12 @@ p {
     margin-top: 80px;
     text-align: center;
     color: #777;
+    background: var(--bg-light);
 }
 
 /* =========================
    ANIMATIONS
 ========================= */
-
 @keyframes float {
     0%, 100% {
         transform: translateY(0);
@@ -131,4 +405,22 @@ p {
 
 .animate-float {
     animation: float 6s ease-in-out infinite;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    form,
+    section {
+        padding: 1.5rem;
+    }
+
+    .icon-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
