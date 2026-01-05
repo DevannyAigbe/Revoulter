@@ -6,7 +6,7 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <span class="me-3">Hello @User.Identity?.Name!</span>
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">
+        <a style="color: #f5f5f5;" class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index">
             Manage Account
         </a>
         <form class="nav_form" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -15,15 +15,18 @@
     }
     else
     {
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+        <a style="color: #f5f5f5;" class="nav-link" asp-area="Identity" asp-page="/Account/Register">
             Register
         </a>
-        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+        <a style="color: #f5f5f5;" class="nav-link" asp-area="Identity" asp-page="/Account/Login">
             Sign In
         </a>
     }
 </div>
 <style>
+    a{
+        color: #f5f5f5;
+    }
 
     /* Active link hover effect */
     .btn-outline-dark:hover {

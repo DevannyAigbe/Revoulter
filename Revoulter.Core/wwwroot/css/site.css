@@ -1120,3 +1120,31 @@ footer .border-white-50 {
     margin: 0;
     padding: 0;
 }
+#logoutBtn {
+    background: none !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #999 !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    font-family: inherit;
+    font-size: inherit;
+    margin: 0;
+}
+
+    #logoutBtn:hover {
+        color: var(--accent) !important;
+        background: none !important;
+        border: none !important;
+    }
+
+    #logoutBtn:focus,
+    #logoutBtn:active {
+        background: none !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
