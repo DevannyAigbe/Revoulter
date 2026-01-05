@@ -26,20 +26,22 @@
                         <li class="nav-item">
                             <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+                   @*      <li class="nav-item">
                             <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "RegisterIP" ? "active" : "")" asp-controller="PrivyAuth" asp-action="Register">Register IP</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "IPIndex" ? "active" : "")" asp-controller="IP" asp-action="Index">IP Index</a>
-                        </li>
-                        <li class="nav-item">
+                        </li> *@
+                       @*  <li class="nav-item">
                             <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Licensing" ? "active" : "")" asp-controller="Licensing" asp-action="Index">Licensing Hub</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "CreatorHub" ? "active" : "")" asp-controller="Creator" asp-action="Index">Creator Hub</a>
-                        </li>
+                        </li> *@
+                             <partial name="_IpPartial" />
                     </ul>
                     <partial name="_LoginPartial" />
+
                 </div>
             </div>
         </nav>

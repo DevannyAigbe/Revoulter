@@ -1,18 +1,24 @@
 ﻿@model IEnumerable<Revoulter.Core.Models.IpAsset>
-
 @{
     ViewData["Title"] = "My IP Assets";
 }
 
-<h2>My Intellectual Property Assets</h2>
-
-<p>
-    <a asp-action="Index" class="btn btn-primary">Upload New IP Asset</a>
-</p>
+<div class="mb-4">
+    <h2>My Intellectual Property Assets</h2>
+    <p>
+        <a asp-action="Index" class="btn btn-primary">
+            <span style="margin-right: 0.5rem;">+</span> Upload New IP Asset
+        </a>
+    </p>
+</div>
 
 @if (!Model.Any())
 {
-    <p>You haven't uploaded any IP assets yet.</p>
+    <div class="empty-state">
+        <div class="empty-icon">📄</div>
+        <p>You haven't uploaded any IP assets yet.</p>
+        <a asp-action="Index" class="btn btn-primary">Get Started</a>
+    </div>
 }
 else
 {
@@ -43,20 +49,28 @@ else
                             <small>@item.FileName</small>
                         </td>
                         <td>
-                            @item.OwnershipPercentage%
+                            <strong>@item.OwnershipPercentage%</strong>
                         </td>
                         <td>
                             @item.CreatedAt.ToString("MMM dd, yyyy")
                         </td>
                         <td>
                             <small>
-                                Arweave: <code>@(string.IsNullOrEmpty(item.ArweaveTxId) ? "Pending" : item.ArweaveTxId.Substring(0, 8) + "...")</code><br />
-                                Story: <code>@(string.IsNullOrEmpty(item.StoryProtocolId) ? "Pending" : item.StoryProtocolId.Substring(0, 8) + "...")</code>
+                                <div class="mb-1">
+                                    <strong>Arweave:</strong>
+                                    <code>@(string.IsNullOrEmpty(item.ArweaveTxId) ? "Pending" : item.ArweaveTxId.Substring(0, 8) + "...")</code>
+                                </div>
+                                <div>
+                                    <strong>Story:</strong>
+                                    <code>@(string.IsNullOrEmpty(item.StoryProtocolId) ? "Pending" : item.StoryProtocolId.Substring(0, 8) + "...")</code>
+                                </div>
                             </small>
                         </td>
                         <td>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">View</a>
-                            <a href="@item.FilePath" download class="btn btn-sm btn-outline-success">Download</a>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="@item.FilePath" download class="btn btn-sm btn-outline-success">Download</a>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -64,3 +78,27 @@ else
         </table>
     </div>
 }
+
+<style>
+    /* Empty State Styling */
+    .empty-state {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        color: #999;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
