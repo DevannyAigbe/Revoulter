@@ -5,33 +5,36 @@ namespace Revoulter.Core.Services
 {
     public class MockArweaveUploader : IArweaveUploader
     {
-        private readonly IWebHostEnvironment _env;
-
-        public MockArweaveUploader(IWebHostEnvironment env)
+        public MockArweaveUploader()
         {
-            _env = env;
         }
 
         public async Task<string> UploadAsync(IFormFile file)
         {
-            if (file == null || file.Length == 0) throw new ArgumentException("File is required.");
+            if (file == null || file.Length == 0)
+                throw new ArgumentException("File is required.");
 
-            // Simulate upload: Save file to wwwroot/uploads
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            // Use temp folder instead of wwwroot (writable in Docker)
+            var uploadsFolder = Path.Combine(Path.GetTempPath(), "uploads");
+            Directory.CreateDirectory(uploadsFolder);
 
-            var filePath = Path.Combine(uploadsFolder, file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            // Safe file name
+            var safeFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, safeFileName);
+
+            // Save file to temp
+            await using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // Generate mock TxId (GUID) and hash
+            // Optional: compute hash if needed
             using var sha256 = SHA256.Create();
-            using var fileStream = file.OpenReadStream();
-            var hash = BitConverter.ToString(sha256.ComputeHash(fileStream)).Replace("-", "").ToLower();
+            await using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var hash = BitConverter.ToString(sha256.ComputeHash(fs)).Replace("-", "").ToLower();
 
-            return Guid.NewGuid().ToString(); // Mock Arweave TxId
+            // Return mock Arweave TxId
+            return Guid.NewGuid().ToString();
         }
     }
-    }
+}
