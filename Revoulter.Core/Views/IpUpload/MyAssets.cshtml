@@ -69,7 +69,11 @@ else
                         <td>
                             <div class="d-flex gap-2">
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="@item.FilePath" download class="btn btn-sm btn-outline-success">Download</a>
+                                <a asp-action="Download"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-success">
+                                    Download
+                                </a>
                             </div>
                         </td>
                     </tr>

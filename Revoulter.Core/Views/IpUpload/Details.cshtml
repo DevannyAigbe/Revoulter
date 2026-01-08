@@ -19,7 +19,12 @@
             <dt class="col-sm-3">File</dt>
             <dd class="col-sm-9">
                 <strong>@Model.FileName</strong><br />
-                <a href="@Model.FilePath" download class="btn btn-success btn-sm mt-2">Download File</a>
+                <a asp-action="Download"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-success btn-sm mt-2">
+                    Download File
+                </a>
+
             </dd>
 
             <dt class="col-sm-3">Ownership</dt>

@@ -76,17 +76,17 @@ namespace Revoulter.Core.Controllers
             return View(asset);
         }
 
-       
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(IpAsset model, IFormFile file)
         {
-            //if (!ModelState.IsValid || file == null)
-            //{
-            //    ViewBag.Categories = new SelectList(Enum.GetValues(typeof(Category)));
-            //    return View("Index", model);
-            //}
+            if (file == null || file.Length == 0)
+            {
+                TempData["Error"] = "No file selected.";
+                return RedirectToAction("Index");
+            }
 
             // 1️⃣ Try your custom/session-based method first
             var user = await GetCurrentUserAsync();
@@ -101,48 +101,53 @@ namespace Revoulter.Core.Controllers
             if (user == null)
             {
                 TempData["Error"] = "Session expired. Please login again.";
-                return RedirectToAction("Login", "Account"); // or Identity default route
+                return RedirectToAction("Login", "Account");
             }
-
 
             Console.WriteLine($"✅ Upload - User found: {user.Id}");
 
             model.OwnerId = user.Id;
-            model.FileName = file.FileName;
 
-            // Create uploads folder if it doesn't exist
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+            // 🔒 SAFE FILE NAME
+            var safeFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            model.FileName = safeFileName;
+
+            // 📁 ALWAYS WRITABLE ON RENDER / DOCKER
+            var uploadsFolder = Path.Combine(Path.GetTempPath(), "uploads");
             Directory.CreateDirectory(uploadsFolder);
 
-            // Save file physically
-            var filePath = Path.Combine(uploadsFolder, file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            var filePath = Path.Combine(uploadsFolder, safeFileName);
+
+            // 💾 SAVE FILE TO TEMP STORAGE
+            await using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 await file.CopyToAsync(stream);
             }
 
-            model.FilePath = Path.Combine("/uploads", file.FileName);
+            // (Optional) Logical path reference only
+            model.FilePath = $"/uploads/{safeFileName}";
 
-            // Mock upload to Arweave
+            // 🌐 MOCK UPLOAD TO ARWEAVE
             var arweaveTxId = await _arweaveUploader.UploadAsync(file);
             model.ArweaveTxId = arweaveTxId;
 
-            // Compute hash
+            // 🔐 COMPUTE SHA256 HASH
             using (var sha256 = SHA256.Create())
+            await using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                using (var fs = new FileStream(filePath, FileMode.Open))
-                {
-                    model.Hash = BitConverter.ToString(sha256.ComputeHash(fs)).Replace("-", "").ToLower();
-                }
+                model.Hash = BitConverter
+                    .ToString(sha256.ComputeHash(fs))
+                    .Replace("-", "")
+                    .ToLower();
             }
 
-            // Mock register on Story Protocol
+            // 📜 MOCK REGISTER ON STORY PROTOCOL
             var storyId = await _storyRegistrar.RegisterAsync(model, arweaveTxId);
             model.StoryProtocolId = storyId;
 
-            // Save to DB
+            // 🗄 SAVE TO DATABASE
             _context.IpAssets.Add(model);
-            await _context.SaveChangesAsync();  //..
+            await _context.SaveChangesAsync();
 
             Console.WriteLine($"✅ Asset uploaded successfully: {model.Id}");
 
@@ -195,5 +200,28 @@ namespace Revoulter.Core.Controllers
 
             return null;
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Download(Guid id)
+        {
+            var asset = _context.IpAssets.FirstOrDefault(x => x.Id == id);
+            if (asset == null)
+                return NotFound();
+
+            // MUST match the upload path exactly
+            var uploadsFolder = Path.Combine(Path.GetTempPath(), "uploads");
+            var filePath = Path.Combine(uploadsFolder, asset.FileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("File no longer exists on the server.");
+
+            return PhysicalFile(
+                filePath,
+                "application/octet-stream",
+                asset.FileName
+            );
+        }
+
     }
 }
