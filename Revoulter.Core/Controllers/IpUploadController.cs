@@ -142,7 +142,7 @@ namespace Revoulter.Core.Controllers
 
             // Save to DB
             _context.IpAssets.Add(model);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();  //..
 
             Console.WriteLine($"✅ Asset uploaded successfully: {model.Id}");
 
